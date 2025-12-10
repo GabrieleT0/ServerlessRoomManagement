@@ -1,0 +1,181 @@
+{
+  "info": {
+    "name": "Sistema Prenotazione Aule - Azure",
+    "description": "Collection per testare l'API di prenotazione aule",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://YOUR-FUNCTION-APP.azurewebsites.net",
+      "type": "string"
+    },
+    {
+      "key": "bookingId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Crea Prenotazione",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"roomId\": \"A101\",\n  \"date\": \"2024-12-20\",\n  \"startTime\": \"09:00\",\n  \"endTime\": \"11:00\",\n  \"professorName\": \"Prof. Mario Rossi\",\n  \"course\": \"Cloud Computing\",\n  \"notes\": \"Demo per studenti\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/bookings",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "bookings"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "2. Leggi Tutte le Prenotazioni",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/bookings",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "bookings"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "3. Filtra per Aula",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/bookings?roomId=A101",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "bookings"],
+          "query": [
+            {
+              "key": "roomId",
+              "value": "A101"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "4. Filtra per Data",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/bookings?date=2024-12-20",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "bookings"],
+          "query": [
+            {
+              "key": "date",
+              "value": "2024-12-20"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "5. Aule Disponibili",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/rooms/available?date=2024-12-20&startTime=14:00&endTime=16:00",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "rooms", "available"],
+          "query": [
+            {
+              "key": "date",
+              "value": "2024-12-20"
+            },
+            {
+              "key": "startTime",
+              "value": "14:00"
+            },
+            {
+              "key": "endTime",
+              "value": "16:00"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "6. Aule con Capacità Minima",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/rooms/available?date=2024-12-20&startTime=14:00&endTime=16:00&minCapacity=50",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "rooms", "available"],
+          "query": [
+            {
+              "key": "date",
+              "value": "2024-12-20"
+            },
+            {
+              "key": "startTime",
+              "value": "14:00"
+            },
+            {
+              "key": "endTime",
+              "value": "16:00"
+            },
+            {
+              "key": "minCapacity",
+              "value": "50"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "7. Elimina Prenotazione",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "{{baseUrl}}/api/bookings/{{bookingId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "bookings", "{{bookingId}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "8. Test Conflitto (deve fallire)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"roomId\": \"A101\",\n  \"date\": \"2024-12-20\",\n  \"startTime\": \"10:00\",\n  \"endTime\": \"12:00\",\n  \"professorName\": \"Prof.ssa Laura Bianchi\",\n  \"course\": \"Algoritmi\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/bookings",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "bookings"]
+        }
+      },
+      "response": []
+    }
+  ]
+}

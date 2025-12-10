@@ -1,0 +1,15 @@
+{
+  "name": "azure-aule-functions",
+  "version": "1.0.0",
+  "description": "Sistema di prenotazione aule con Azure Functions",
+  "scripts": {
+    "start": "func start",
+    "test": "echo \"No tests yet\""
+  },
+  "dependencies": {
+    "@azure/cosmos": "^4.0.0"
+  },
+  "devDependencies": {
+    "@azure/functions": "^4.0.0"
+  }
+}

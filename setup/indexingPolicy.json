@@ -1,0 +1,14 @@
+{
+  "indexingMode": "consistent",
+  "automatic": true,
+  "includedPaths": [
+    { "path": "/*" }
+  ],
+  "excludedPaths": [],
+  "compositeIndexes": [
+    [
+      { "path": "/date", "order": "ascending" },
+      { "path": "/startTime", "order": "ascending" }
+    ]
+  ]
+}
