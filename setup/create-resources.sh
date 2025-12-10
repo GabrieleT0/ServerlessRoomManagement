@@ -131,7 +131,7 @@ else
 fi
 echo ""
 
-echo "Waiting 5 minutes in order that Cosmos DB and the Storage Account are fully provisioned..."
+echo "Aspetto 5 minuti in modo che Cosmos DB e lo Storage Account siano completamente provisionati..."
 sleep 300
 
 # ============================================
@@ -215,7 +215,7 @@ echo "   ✓ Function App: $FUNCTION_APP"
 echo ""
 
 echo -e "${BLUE}Adesso esegui deploy delle function:${NC}"
-echo "   1. cd ../functions"
+echo "   1. cd ../backend/functions"
 echo "   2. npm install"
 echo "   3. func azure functionapp publish $FUNCTION_APP"
 echo ""
