@@ -34,6 +34,12 @@ az account set --subscription "NOME_O_ID_SOTTOSCRIZIONE"
 
 ```
 
+### 2. Installa Azure Functions Core Tools
+```bash
+# Installa globalmente sul sistema la versione 4 di Azure Functions Core Tools usando npm
+npm install -g azure-functions-core-tools@4
+```
+
 ### 3. Crea le Risorse Azure
 
 ```bash
