@@ -1,6 +1,6 @@
 const { CosmosClient } = require("@azure/cosmos");
 
-// Inizializza Cosmos DB client (riutilizzato tra invocazioni - importante!)
+// Inizializza Cosmos DB client
 const client = new CosmosClient(process.env.COSMOS_CONNECTION_STRING);
 const database = client.database(process.env.COSMOS_DATABASE_NAME);
 const container = database.container(process.env.COSMOS_CONTAINER_NAME);
