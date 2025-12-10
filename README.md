@@ -34,7 +34,7 @@ az account set --subscription "NOME_O_ID_SOTTOSCRIZIONE"
 
 ```
 
-### 3. Crea le Risorse Azure (5 minuti)
+### 3. Crea le Risorse Azure
 
 ```bash
 # Esegui lo script di setup
