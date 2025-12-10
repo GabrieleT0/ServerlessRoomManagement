@@ -11,9 +11,8 @@ echo -e "${BLUE}========================================${NC}"
 echo -e "${BLUE}  Azure Serverless Demo - Setup${NC}"
 echo -e "${BLUE}========================================${NC}\n"
 
-# ============================================
+
 # CONFIGURAZIONE - MODIFICA QUESTI VALORI
-# ============================================
 
 RESOURCE_GROUP="rg-aule-demo"
 LOCATION="spaincentral" # 
@@ -23,7 +22,7 @@ CONTAINER_NAME="bookings"
 STORAGE_ACCOUNT="stauledemo17839"
 FUNCTION_APP="func-aule-demo-12342" # $RANDOM
 
-echo -e "${YELLOW}📝 Configurazione:${NC}"
+echo -e "${YELLOW}Configurazione:${NC}"
 echo "   Resource Group: $RESOURCE_GROUP"
 echo "   Location: $LOCATION"
 echo "   Cosmos Account: $COSMOS_ACCOUNT"
@@ -31,9 +30,7 @@ echo "   Function App: $FUNCTION_APP"
 echo "   Storage Account: $STORAGE_ACCOUNT"
 echo ""
 
-# ============================================
 # 1. VERIFICA LOGIN E SOTTOSCRIZIONE
-# ============================================
 
 echo -e "${BLUE} Verifica autenticazione...${NC}"
 
@@ -47,9 +44,9 @@ fi
 SUBSCRIPTION=$(az account show --query name -o tsv)
 echo -e "${GREEN}Loggato con sottoscrizione: $SUBSCRIPTION${NC}\n"
 
-# ============================================
+
 # 2. CREA RESOURCE GROUP
-# ============================================
+
 
 echo -e "${BLUE}Creazione Resource Group...${NC}"
 
@@ -64,9 +61,7 @@ else
 fi
 echo ""
 
-# ============================================
 # 3. CREA COSMOS DB
-# ============================================
 
 echo -e "${BLUE}Creazione Cosmos DB... (2-3 min)${NC}"
 
@@ -110,11 +105,12 @@ az cosmosdb sql container update \
     --database-name $DATABASE_NAME \
     --name $CONTAINER_NAME \
     --resource-group $RESOURCE_GROUP \
-    --idx @indexingPolicy.json
+    --idx @indexingPolicy.json \
+    --output none
 
-# ============================================
+
 # 4. CREA STORAGE ACCOUNT
-# ============================================
+
 
 echo -e "${BLUE}Creazione Storage Account...${NC}"
 
@@ -134,9 +130,7 @@ echo ""
 echo "Aspetto 5 minuti in modo che Cosmos DB e lo Storage Account siano completamente provisionati..."
 sleep 300
 
-# ============================================
 # 5. CREA FUNCTION APP
-# ============================================
 
 echo -e "${BLUE}Creazione Function App...${NC}"
 
@@ -157,9 +151,7 @@ else
 fi
 echo ""
 
-# ============================================
 # 6. CONFIGURA VARIABILI D'AMBIENTE
-# ============================================
 
 echo "Aspetto 5 minuti in modo che la Function App sia completamente provisionata..."
 sleep 300
@@ -185,9 +177,7 @@ az functionapp config appsettings set \
 
 echo -e "${GREEN}Variabili configurate${NC}\n"
 
-# ============================================
 # 7. ABILITA APPLICATION INSIGHTS
-# ============================================
 
 echo -e "${BLUE}Abilitazione Application Insights...${NC}"
 
@@ -199,19 +189,19 @@ az monitor app-insights component create \
 
 echo -e "${GREEN}Application Insights abilitato${NC}\n"
 
-# ============================================
+
 # 9. RIEPILOGO
-# ============================================
+
 
 echo -e "${GREEN}======================================================${NC}"
-echo -e "${GREEN}  ✓ Setup del Backend Completato con Successo!${NC}"
+echo -e "${GREEN}Setup del Backend Completato con Successo!${NC}"
 echo -e "${GREEN}======================================================${NC}\n"
 
 echo -e "${BLUE}Risorse Create:${NC}"
-echo "   ✓ Resource Group: $RESOURCE_GROUP"
-echo "   ✓ Cosmos DB: $COSMOS_ACCOUNT"
-echo "   ✓ Storage Account: $STORAGE_ACCOUNT"
-echo "   ✓ Function App: $FUNCTION_APP"
+echo "   Resource Group: $RESOURCE_GROUP"
+echo "   Cosmos DB: $COSMOS_ACCOUNT"
+echo "   Storage Account: $STORAGE_ACCOUNT"
+echo "   Function App: $FUNCTION_APP"
 echo ""
 
 echo -e "${BLUE}Adesso esegui deploy delle function:${NC}"
@@ -344,7 +334,8 @@ WEBSITE_URL=$(az storage account show \
 az functionapp cors add \
     --name $FUNCTION_APP \
     --resource-group $RESOURCE_GROUP \
-    --allowed-origins "${WEBSITE_URL%/}"
+    --allowed-origins "${WEBSITE_URL%/}" \
+    --output none
 
 # az storage blob upload \
 #     --account-name "$STORAGE_ACCOUNT" \
