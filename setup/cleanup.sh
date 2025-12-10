@@ -1,9 +1,6 @@
 #!/bin/bash
 
-# ============================================
 # Script di Cleanup Risorse Azure
-# Elimina tutte le risorse create per la demo
-# ============================================
 
 set -e
 
@@ -20,16 +17,16 @@ echo -e "${RED}========================================${NC}\n"
 # Carica configurazione se esiste
 if [ -f ../config.sh ]; then
     source ../config.sh
-    echo -e "${YELLOW}📝 Configurazione caricata:${NC}"
+    echo -e "${YELLOW}Configurazione caricata:${NC}"
     echo "   Resource Group: $RESOURCE_GROUP"
     echo ""
 else
-    echo -e "${YELLOW}⚠ File config.sh non trovato.${NC}"
+    echo -e "${YELLOW}File config.sh non trovato.${NC}"
     read -p "Inserisci il nome del Resource Group da eliminare: " RESOURCE_GROUP
 fi
 
 # Conferma
-echo -e "${RED}⚠️  ATTENZIONE: Questa operazione eliminerà:${NC}"
+echo -e "${RED}ATTENZIONE: Questa operazione eliminerà:${NC}"
 echo "   - Resource Group: $RESOURCE_GROUP"
 echo "   - Tutte le risorse contenute (Cosmos DB, Functions, Storage, etc.)"
 echo ""
@@ -41,7 +38,7 @@ if [ "$CONFIRM" != "yes" ]; then
 fi
 
 echo ""
-echo -e "${RED}🗑️  Eliminazione in corso...${NC}"
+echo -e "${RED}Eliminazione in corso...${NC}"
 
 # Elimina il resource group (elimina automaticamente tutte le risorse)
 az group delete \
@@ -51,7 +48,7 @@ az group delete \
 
 echo -e "${GREEN}✓ Comando di eliminazione inviato${NC}"
 echo ""
-echo -e "${YELLOW}💡 L'eliminazione avviene in background e può richiedere alcuni minuti.${NC}"
+echo -e "${YELLOW}L'eliminazione avviene in background e può richiedere alcuni minuti.${NC}"
 echo -e "${YELLOW}   Puoi verificare lo stato nel portale Azure o con:${NC}"
 echo -e "${YELLOW}   az group show --name $RESOURCE_GROUP${NC}"
 echo ""
@@ -59,7 +56,7 @@ echo ""
 # Rimuovi file di configurazione
 if [ -f ../config.sh ]; then
     rm ../config.sh
-    echo -e "${GREEN}✓ File config.sh rimosso${NC}"
+    echo -e "${GREEN}File config.sh rimosso${NC}"
 fi
 
 echo ""

@@ -12,11 +12,11 @@ echo -e "${BLUE}  Azure Serverless Demo - Setup${NC}"
 echo -e "${BLUE}========================================${NC}\n"
 
 
-# CONFIGURAZIONE - MODIFICA QUESTI VALORI
+# CONFIGURAZIONE 
 
 RESOURCE_GROUP="rg-aule-demo"
 LOCATION="spaincentral" # 
-COSMOS_ACCOUNT="cosmos-aule-demo-12987"  # Aggiunge numero random per unicità
+COSMOS_ACCOUNT="cosmos-aule-demo-12987" 
 DATABASE_NAME="auledatabase"
 CONTAINER_NAME="bookings"
 STORAGE_ACCOUNT="stauledemo17839"
@@ -123,7 +123,7 @@ else
         --location $LOCATION \
         --sku Standard_LRS \
         --output none
-    echo -e "${GREEN}✓ Storage Account creato${NC}"
+    echo -e "${GREEN}Storage Account creato${NC}"
 fi
 echo ""
 
@@ -337,21 +337,8 @@ az functionapp cors add \
     --allowed-origins "${WEBSITE_URL%/}" \
     --output none
 
-# az storage blob upload \
-#     --account-name "$STORAGE_ACCOUNT" \
-#     --account-key "$ACCOUNT_KEY" \
-#     --container-name '$web' \
-#     --name "config.js" \
-#     --file "/tmp/config.js" \
-#     --content-type "application/javascript" \
-#     --output none \
-#     --overwrite
 
-# echo "    config.js caricato"
-
-# ============================================
 #  SALVA CONFIGURAZIONE
-# ============================================
 
 echo -e "${BLUE}Salvataggio configurazione...${NC}"
 
