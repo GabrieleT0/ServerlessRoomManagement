@@ -1,12 +1,12 @@
 const { CosmosClient } = require("@azure/cosmos");
 
-// Inizializza Cosmos DB client
+// Initialize Cosmos DB client
 const client = new CosmosClient(process.env.COSMOS_CONNECTION_STRING);
 const database = client.database(process.env.COSMOS_DATABASE_NAME);
 const container = database.container(process.env.COSMOS_CONTAINER_NAME);
 
 /**
- * Azure Function: Crea una nuova prenotazione
+ * Azure Function: Create a new booking
  * 
  * Endpoint: POST /api/bookings
  * Body: {
@@ -20,53 +20,53 @@ const container = database.container(process.env.COSMOS_CONTAINER_NAME);
  * }
  */
 module.exports = async function (context, req) {
-    context.log('Richiesta di prenotazione ricevuta');
+    context.log('Booking request received');
 
     try {
-        // Validazione input
+        // Input validation
         const { roomId, date, startTime, endTime, professorName, course, notes } = req.body;
 
         if (!roomId || !date || !startTime || !endTime || !professorName || !course) {
             context.res = {
                 status: 400,
                 body: {
-                    error: "Campi obbligatori mancanti",
+                    error: "Missing required fields",
                     required: ["roomId", "date", "startTime", "endTime", "professorName", "course"]
                 }
             };
             return;
         }
 
-        // Validazione formato data
+        // Validate date format
         const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
         if (!dateRegex.test(date)) {
             context.res = {
                 status: 400,
-                body: { error: "Formato data non valido. Usa YYYY-MM-DD" }
+                body: { error: "Invalid date format. Use YYYY-MM-DD" }
             };
             return;
         }
 
-        // Validazione formato orari
+        // Validate time format
         const timeRegex = /^\d{2}:\d{2}$/;
         if (!timeRegex.test(startTime) || !timeRegex.test(endTime)) {
             context.res = {
                 status: 400,
-                body: { error: "Formato orario non valido. Usa HH:MM" }
+                body: { error: "Invalid time format. Use HH:MM" }
             };
             return;
         }
 
-        // Verifica che l'orario di fine sia dopo l'orario di inizio
+        // Ensure end time is after start time
         if (startTime >= endTime) {
             context.res = {
                 status: 400,
-                body: { error: "L'orario di fine deve essere successivo all'orario di inizio" }
+                body: { error: "End time must be after start time" }
             };
             return;
         }
 
-        // Verifica conflitti con prenotazioni esistenti
+        // Check conflicts with existing bookings
         const querySpec = {
             query: "SELECT * FROM c WHERE c.roomId = @roomId AND c.date = @date",
             parameters: [
@@ -79,9 +79,9 @@ module.exports = async function (context, req) {
             .query(querySpec)
             .fetchAll();
 
-        // Controlla sovrapposizioni
+        // Check for overlaps
         const hasConflict = existingBookings.some(booking => {
-            // Controlla se c'è sovrapposizione tra gli orari
+            // Check if time ranges overlap
             return !(endTime <= booking.startTime || startTime >= booking.endTime);
         });
 
@@ -89,7 +89,7 @@ module.exports = async function (context, req) {
             context.res = {
                 status: 409,
                 body: {
-                    error: "Conflitto: aula già prenotata in questo orario",
+                    error: "Conflict: room already booked for this time slot",
                     existingBookings: existingBookings.map(b => ({
                         startTime: b.startTime,
                         endTime: b.endTime,
@@ -100,7 +100,7 @@ module.exports = async function (context, req) {
             return;
         }
 
-        // Crea la prenotazione
+        // Create booking payload
         const booking = {
             id: `booking-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             roomId,
@@ -115,25 +115,25 @@ module.exports = async function (context, req) {
 
         const { resource: createdBooking } = await container.items.create(booking);
 
-        context.log(`Prenotazione creata: ${createdBooking.id}`);
+        context.log(`Booking created: ${createdBooking.id}`);
 
-        // Inivia risposta di successo al client
+        // Send success response to client
         context.res = {
             status: 201,
             body: {
                 success: true,
-                message: "Prenotazione creata con successo",
+                message: "Booking created successfully",
                 booking: createdBooking
             }
         };
 
     } catch (error) {
-        context.log.error('Errore nella creazione della prenotazione:', error);
+        context.log.error('Error while creating booking:', error);
 
         context.res = {
             status: 500,
             body: {
-                error: "Errore interno del server",
+                error: "Internal server error",
                 message: error.message
             }
         };

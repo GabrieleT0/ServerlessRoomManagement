@@ -12,7 +12,7 @@ echo -e "${BLUE}  Azure Serverless Demo - Setup${NC}"
 echo -e "${BLUE}========================================${NC}\n"
 
 
-# CONFIGURAZIONE 
+# CONFIGURATION
 
 RESOURCE_GROUP="rg-aule-demo"
 LOCATION="spaincentral" # 
@@ -22,7 +22,7 @@ CONTAINER_NAME="bookings"
 STORAGE_ACCOUNT="stauledemo17839"
 FUNCTION_APP="func-aule-demo-12342" # $RANDOM
 
-echo -e "${YELLOW}Configurazione:${NC}"
+echo -e "${YELLOW}Configuration:${NC}"
 echo "   Resource Group: $RESOURCE_GROUP"
 echo "   Location: $LOCATION"
 echo "   Cosmos Account: $COSMOS_ACCOUNT"
@@ -30,44 +30,44 @@ echo "   Function App: $FUNCTION_APP"
 echo "   Storage Account: $STORAGE_ACCOUNT"
 echo ""
 
-# 1. VERIFICA LOGIN E SOTTOSCRIZIONE
+# 1. VERIFY LOGIN AND SUBSCRIPTION
 
-echo -e "${BLUE} Verifica autenticazione...${NC}"
+echo -e "${BLUE} Checking authentication...${NC}"
 
-# Verifica se l'utente è loggato
+# Check if the user is logged in
 if ! az account show &> /dev/null; then
-    echo -e "${YELLOW} Non sei loggato. Avvio login...${NC}"
+    echo -e "${YELLOW} Not logged in. Starting login...${NC}"
     az login
 fi
 
-# Mostra la sottoscrizione attiva
+# Show active subscription
 SUBSCRIPTION=$(az account show --query name -o tsv)
-echo -e "${GREEN}Loggato con sottoscrizione: $SUBSCRIPTION${NC}\n"
+echo -e "${GREEN}Logged in with subscription: $SUBSCRIPTION${NC}\n"
 
 
-# 2. CREA RESOURCE GROUP
+# 2. CREATE RESOURCE GROUP
 
 
-echo -e "${BLUE}Creazione Resource Group...${NC}"
+echo -e "${BLUE}Creating Resource Group...${NC}"
 
 if az group exists --name $RESOURCE_GROUP | grep -q "true"; then
-    echo -e "${YELLOW}Resource Group già esistente, lo uso.${NC}"
+    echo -e "${YELLOW}Resource Group already exists, reusing it.${NC}"
 else
     az group create \
         --name $RESOURCE_GROUP \
         --location $LOCATION \
         --output none
-    echo -e "${GREEN}Resource Group creato${NC}"
+    echo -e "${GREEN}Resource Group created${NC}"
 fi
 echo ""
 
-# 3. CREA COSMOS DB
+# 3. CREATE COSMOS DB
 
-echo -e "${BLUE}Creazione Cosmos DB... (2-3 min)${NC}"
+echo -e "${BLUE}Creating Cosmos DB... (2-3 min)${NC}"
 
-# Verifica se Cosmos DB esiste già
+# Check if Cosmos DB already exists
 if az cosmosdb show --name $COSMOS_ACCOUNT --resource-group $RESOURCE_GROUP &> /dev/null; then
-    echo -e "${YELLOW}Cosmos DB già esistente, lo uso.${NC}"
+    echo -e "${YELLOW}Cosmos DB already exists, reusing it.${NC}"
 else
     az cosmosdb create \
         --name $COSMOS_ACCOUNT \
@@ -75,19 +75,19 @@ else
         --default-consistency-level Session \
         --locations regionName=$LOCATION failoverPriority=0 isZoneRedundant=False \
         --output none
-    echo -e "${GREEN}Cosmos DB account creato${NC}"
+    echo -e "${GREEN}Cosmos DB account created${NC}"
 fi
 
-# Crea database
-echo "   Creazione database..."
+# Create database
+echo "   Creating database..."
 az cosmosdb sql database create \
     --account-name $COSMOS_ACCOUNT \
     --resource-group $RESOURCE_GROUP \
     --name $DATABASE_NAME \
-    --output none 2>/dev/null || echo "   Database già esistente"
+    --output none 2>/dev/null || echo "   Database already exists"
 
-# Crea container
-echo "   Creazione container..."
+# Create container
+echo "   Creating container..."
 az cosmosdb sql container create \
     --account-name $COSMOS_ACCOUNT \
     --database-name $DATABASE_NAME \
@@ -95,9 +95,9 @@ az cosmosdb sql container create \
     --name $CONTAINER_NAME \
     --partition-key-path "/roomId" \
     --throughput 400 \
-    --output none 2>/dev/null || echo "   Container già esistente"
+    --output none 2>/dev/null || echo "   Container already exists"
 
-echo -e "${GREEN}Cosmos DB configurato${NC}\n"
+echo -e "${GREEN}Cosmos DB configured${NC}\n"
 
 
 az cosmosdb sql container update \
@@ -109,13 +109,13 @@ az cosmosdb sql container update \
     --output none
 
 
-# 4. CREA STORAGE ACCOUNT
+# 4. CREATE STORAGE ACCOUNT
 
 
-echo -e "${BLUE}Creazione Storage Account...${NC}"
+echo -e "${BLUE}Creating Storage Account...${NC}"
 
 if az storage account show --name $STORAGE_ACCOUNT --resource-group $RESOURCE_GROUP &> /dev/null; then
-    echo -e "${YELLOW}Storage Account già esistente, lo uso.${NC}"
+    echo -e "${YELLOW}Storage Account already exists, reusing it.${NC}"
 else
     az storage account create \
         --name $STORAGE_ACCOUNT \
@@ -123,19 +123,19 @@ else
         --location $LOCATION \
         --sku Standard_LRS \
         --output none
-    echo -e "${GREEN}Storage Account creato${NC}"
+    echo -e "${GREEN}Storage Account created${NC}"
 fi
 echo ""
 
-echo "Aspetto 5 minuti in modo che Cosmos DB e lo Storage Account siano completamente provisionati..."
+echo "Waiting 5 minutes so Cosmos DB and the Storage Account are fully provisioned..."
 sleep 300
 
-# 5. CREA FUNCTION APP
+# 5. CREATE FUNCTION APP
 
-echo -e "${BLUE}Creazione Function App...${NC}"
+echo -e "${BLUE}Creating Function App...${NC}"
 
 if az functionapp show --name $FUNCTION_APP --resource-group $RESOURCE_GROUP &> /dev/null; then
-    echo -e "${YELLOW}Function App già esistente, la uso.${NC}"
+    echo -e "${YELLOW}Function App already exists, reusing it.${NC}"
 else
     az functionapp create \
         --name $FUNCTION_APP \
@@ -147,25 +147,25 @@ else
         --functions-version 4 \
         --os-type Windows \
         --output none
-    echo -e "${GREEN}Function App creata${NC}"
+    echo -e "${GREEN}Function App created${NC}"
 fi
 echo ""
 
-# 6. CONFIGURA VARIABILI D'AMBIENTE
+# 6. CONFIGURE ENVIRONMENT VARIABLES
 
-echo "Aspetto 5 minuti in modo che la Function App sia completamente provisionata..."
+echo "Waiting 5 minutes so the Function App is fully provisioned..."
 sleep 300
 
-echo -e "${BLUE}Configurazione variabili d'ambiente...${NC}"
+echo -e "${BLUE}Configuring environment variables...${NC}"
 
-# Ottieni connection string di Cosmos DB
+# Get Cosmos DB connection string
 COSMOS_CONNECTION_STRING=$(az cosmosdb keys list \
     --name $COSMOS_ACCOUNT \
     --resource-group $RESOURCE_GROUP \
     --type connection-strings \
     --query "connectionStrings[0].connectionString" -o tsv)
 
-# Configura app settings
+# Configure app settings
 az functionapp config appsettings set \
     --name $FUNCTION_APP \
     --resource-group $RESOURCE_GROUP \
@@ -175,43 +175,43 @@ az functionapp config appsettings set \
         "COSMOS_CONTAINER_NAME=$CONTAINER_NAME" \
     --output none
 
-echo -e "${GREEN}Variabili configurate${NC}\n"
+echo -e "${GREEN}Variables configured${NC}\n"
 
-# 7. ABILITA APPLICATION INSIGHTS
+# 7. ENABLE APPLICATION INSIGHTS
 
-echo -e "${BLUE}Abilitazione Application Insights...${NC}"
+echo -e "${BLUE}Enabling Application Insights...${NC}"
 
 az monitor app-insights component create \
     --app $FUNCTION_APP \
     --location $LOCATION \
     --resource-group $RESOURCE_GROUP \
-    --output none 2>/dev/null || echo "Application Insights già configurato"
+    --output none 2>/dev/null || echo "Application Insights already configured"
 
-echo -e "${GREEN}Application Insights abilitato${NC}\n"
+echo -e "${GREEN}Application Insights enabled${NC}\n"
 
 
-# 9. RIEPILOGO
+# 9. SUMMARY
 
 
 echo -e "${GREEN}======================================================${NC}"
-echo -e "${GREEN}Setup del Backend Completato con Successo!${NC}"
+echo -e "${GREEN}Backend setup completed successfully!${NC}"
 echo -e "${GREEN}======================================================${NC}\n"
 
-echo -e "${BLUE}Risorse Create:${NC}"
+echo -e "${BLUE}Resources Created:${NC}"
 echo "   Resource Group: $RESOURCE_GROUP"
 echo "   Cosmos DB: $COSMOS_ACCOUNT"
 echo "   Storage Account: $STORAGE_ACCOUNT"
 echo "   Function App: $FUNCTION_APP"
 echo ""
 
-echo -e "${BLUE}Adesso esegui deploy delle function:${NC}"
+echo -e "${BLUE}Now deploy the functions:${NC}"
 echo "   1. cd ../backend/functions"
 echo "   2. npm install"
 echo "   3. func azure functionapp publish $FUNCTION_APP"
 echo ""
 
 
-echo "Deploy Frontend su Azure Static Web Apps"
+echo "Deploy Frontend to Azure Static Web Apps"
 echo "============================================="
 echo ""
 
@@ -221,7 +221,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' 
 
-echo -e "Step 1: ${BLUE}Abilitazione Static Website Hosting...${NC}"
+echo -e "Step 1: ${BLUE}Enabling Static Website Hosting...${NC}"
 az storage blob service-properties update \
     --account-name "$STORAGE_ACCOUNT" \
     --static-website \
@@ -229,11 +229,11 @@ az storage blob service-properties update \
     --index-document index.html \
     --output none 
 
-echo -e "${GREEN}Static Website Hosting abilitato${NC}"
+echo -e "${GREEN}Static Website Hosting enabled${NC}"
 echo ""
 
-# Upload dei file
-echo -e "Step 2: ${BLUE}Upload dei file...${NC}"
+# Upload files
+echo -e "Step 2: ${BLUE}Uploading files...${NC}"
 
 # Get storage account key
 ACCOUNT_KEY=$(az storage account keys list \
@@ -243,7 +243,7 @@ ACCOUNT_KEY=$(az storage account keys list \
     --output tsv)
 
 
-echo -e "${BLUE}Creazione config.js con URL backend...${NC}"
+echo -e "${BLUE}Creating config.js with backend URL...${NC}"
 
 
 # ==========================================
@@ -279,7 +279,7 @@ az storage blob upload \
     --output none \
     --overwrite
 
-echo "   config.js caricato"
+echo "   config.js uploaded"
 
 # Upload HTML
 az storage blob upload \
@@ -292,7 +292,7 @@ az storage blob upload \
     --output none  \
     --overwrite
 
-echo "    index.html caricato"
+echo "    index.html uploaded"
 
 # Upload CSS
 az storage blob upload \
@@ -305,7 +305,7 @@ az storage blob upload \
     --output none \
     --overwrite
 
-echo "    styles.css caricato"
+echo "    styles.css uploaded"
 
 # Upload JS
 az storage blob upload \
@@ -318,9 +318,9 @@ az storage blob upload \
     --output none \
     --overwrite
 
-echo "    script.js caricato"
+echo "    script.js uploaded"
 
-echo -e "${GREEN}Tutti i file caricati${NC}"
+echo -e "${GREEN}All files uploaded${NC}"
 echo ""
 
 # Get website URL
@@ -330,7 +330,7 @@ WEBSITE_URL=$(az storage account show \
     --query "primaryEndpoints.web" \
     --output tsv)
 
-# Configura CORS per Function App
+# Configure CORS for Function App
 az functionapp cors add \
     --name $FUNCTION_APP \
     --resource-group $RESOURCE_GROUP \
@@ -338,9 +338,9 @@ az functionapp cors add \
     --output none
 
 
-#  SALVA CONFIGURAZIONE
+#  SAVE CONFIGURATION
 
-echo -e "${BLUE}Salvataggio configurazione...${NC}"
+echo -e "${BLUE}Saving configuration...${NC}"
 
 cat > ../config.sh << EOF
 #!/bin/bash
@@ -361,13 +361,13 @@ EOF
 
 chmod +x ../config.sh
 
-echo -e "${GREEN}Configurazione salvata in config.sh${NC}\n"
+echo -e "${GREEN}Configuration saved to config.sh${NC}\n"
 
 echo ""
 echo -e "${GREEN}======================================================${NC}"
-echo -e "${GREEN}    Deploy del Frontend Completato con Successo!${NC}"
+echo -e "${GREEN}    Frontend deployment completed successfully!${NC}"
 echo -e "${GREEN}======================================================${NC}\n"
 echo ""
-echo -e "${BLUE}URL del sito:${NC}"
+echo -e "${BLUE}Site URL:${NC}"
 echo "   $WEBSITE_URL"
 echo ""

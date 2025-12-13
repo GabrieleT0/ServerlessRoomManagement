@@ -1,12 +1,12 @@
 // Configuration
 // Priority: 1. APP_CONFIG (from config.js), 2. localStorage, 3. empty
 const getApiBaseUrl = () => {
-    // Cerca il file config.js per la configurazione
+    // Look for config.js to obtain configuration
     if (window.APP_CONFIG && window.APP_CONFIG.isConfigured()) {
         return window.APP_CONFIG.API_BASE_URL;
     }
     
-    // Fallback a localStorage
+    // Fallback to localStorage
     const stored = localStorage.getItem('apiBaseUrl');
     if (stored && stored !== 'https://YOUR-FUNCTION-APP.azurewebsites.net') {
         return stored;
@@ -80,15 +80,15 @@ async function checkApiConnection() {
         
         if (response.ok) {
             statusDot.classList.add('online');
-            statusText.textContent = 'Connesso ad Azure';
+            statusText.textContent = 'Connected to Azure';
         } else {
-            throw new Error('API non raggiungibile');
+            throw new Error('API unreachable');
         }
     } catch (error) {
         statusDot.classList.add('offline');
-        statusText.textContent = 'Offline - Controlla configurazione';
+        statusText.textContent = 'Offline - Check configuration';
         console.error('Connection error:', error);
-        showAlert('error', 'Impossibile connettersi all\'API. Verifica la configurazione.');
+        showAlert('error', 'Unable to connect to the API. Check configuration.');
     }
 }
 
@@ -127,17 +127,17 @@ async function handleBookingSubmit(e) {
         const data = await response.json();
         
         if (response.ok) {
-            showAlert('success', `Prenotazione creata con successo! Aula ${booking.roomId} prenotata per il ${booking.date}`);
+            showAlert('success', `Booking created successfully! Room ${booking.roomId} reserved for ${booking.date}`);
             document.getElementById('bookingForm').reset();
             setDefaultDates();
             loadBookings();
             updateStats();
         } else {
-            throw new Error(data.error || 'Errore nella creazione della prenotazione');
+            throw new Error(data.error || 'Error creating booking');
         }
     } catch (error) {
         console.error('Booking error:', error);
-        showAlert('error', `Errore: ${error.message}`);
+        showAlert('error', `Error: ${error.message}`);
     } finally {
         // Re-enable button
         submitBtn.disabled = false;
@@ -149,7 +149,7 @@ async function handleBookingSubmit(e) {
 // Load Bookings
 async function loadBookings(filters = {}) {
     const bookingsList = document.getElementById('bookingsList');
-    bookingsList.innerHTML = '<div class="loading">⏳ Caricamento prenotazioni...</div>';
+    bookingsList.innerHTML = '<div class="loading">⏳ Loading bookings...</div>';
     
     try {
         let url = `${API_BASE_URL}/api/bookings`;
@@ -165,7 +165,7 @@ async function loadBookings(filters = {}) {
         const response = await fetch(url);
         
         if (!response.ok) {
-            throw new Error('Impossibile caricare le prenotazioni');
+            throw new Error('Unable to load bookings');
         }
         
         const data = await response.json();
@@ -179,7 +179,7 @@ async function loadBookings(filters = {}) {
         bookingsList.innerHTML = `
             <div class="empty-state">
                 <div class="empty-state-icon">⚠️</div>
-                <div class="empty-state-text">Errore nel caricamento delle prenotazioni</div>
+                <div class="empty-state-text">Error loading bookings</div>
             </div>
         `;
     }
@@ -193,7 +193,7 @@ function renderBookings(bookings) {
         bookingsList.innerHTML = `
             <div class="empty-state">
                 <div class="empty-state-icon">📭</div>
-                <div class="empty-state-text">Nessuna prenotazione trovata</div>
+                <div class="empty-state-text">No bookings found</div>
             </div>
         `;
         return;
@@ -210,16 +210,16 @@ function renderBookings(bookings) {
         <div class="booking-item">
             <div class="booking-header">
                 <div class="booking-room">🏛️ ${booking.roomId}</div>
-                <button class="booking-delete" onclick="deleteBooking('${booking.id}')" title="Elimina prenotazione">
+                <button class="booking-delete" onclick="deleteBooking('${booking.id}')" title="Delete booking">
                     🗑️
                 </button>
             </div>
             <div class="booking-info">
-                <div><strong>📅 Data:</strong> ${formatDate(booking.date)}</div>
-                <div><strong>🕐 Orario:</strong> ${booking.startTime} - ${booking.endTime}</div>
-                <div><strong>👨‍🏫 Professore:</strong> ${booking.professorName}</div>
-                <div><strong>📚 Corso:</strong> ${booking.course}</div>
-                ${booking.notes ? `<div><strong>📝 Note:</strong> ${booking.notes}</div>` : ''}
+                <div><strong>📅 Date:</strong> ${formatDate(booking.date)}</div>
+                <div><strong>🕐 Time:</strong> ${booking.startTime} - ${booking.endTime}</div>
+                <div><strong>👨‍🏫 Professor:</strong> ${booking.professorName}</div>
+                <div><strong>📚 Course:</strong> ${booking.course}</div>
+                ${booking.notes ? `<div><strong>📝 Notes:</strong> ${booking.notes}</div>` : ''}
             </div>
         </div>
     `).join('');
@@ -227,7 +227,7 @@ function renderBookings(bookings) {
 
 // Delete Booking
 async function deleteBooking(bookingId) {
-    if (!confirm('Sei sicuro di voler eliminare questa prenotazione?')) {
+    if (!confirm('Are you sure you want to delete this booking?')) {
         return;
     }
     
@@ -237,16 +237,16 @@ async function deleteBooking(bookingId) {
         });
         
         if (response.ok) {
-            showAlert('success', 'Prenotazione eliminata con successo');
+            showAlert('success', 'Booking deleted successfully');
             loadBookings();
             updateStats();
         } else {
             const data = await response.json();
-            throw new Error(data.error || 'Errore nell\'eliminazione');
+            throw new Error(data.error || 'Error while deleting');
         }
     } catch (error) {
         console.error('Delete error:', error);
-        showAlert('error', `Errore: ${error.message}`);
+        showAlert('error', `Error: ${error.message}`);
     }
 }
 
@@ -262,14 +262,14 @@ async function handleSearchSubmit(e) {
     const roomsList = document.getElementById('roomsList');
     
     resultsContainer.style.display = 'block';
-    roomsList.innerHTML = '<div class="loading">Ricerca aule disponibili...</div>';
+    roomsList.innerHTML = '<div class="loading">Searching available rooms...</div>';
     
     try {
         const url = `${API_BASE_URL}/api/rooms/available?date=${date}&startTime=${startTime}&endTime=${endTime}`;
         const response = await fetch(url);
         
         if (!response.ok) {
-            throw new Error('Errore nella ricerca');
+            throw new Error('Error searching rooms');
         }
         
         const data = await response.json();
@@ -282,27 +282,27 @@ async function handleSearchSubmit(e) {
             roomsList.innerHTML = `
                 <div class="empty-state">
                     <div class="empty-state-icon">😞</div>
-                    <div class="empty-state-text">Nessuna aula disponibile per questo orario</div>
+                    <div class="empty-state-text">No rooms available for this time</div>
                 </div>
             `;
         } else {
             roomsList.innerHTML = rooms.map(room => `
                 <div class="room-item">
                     <div class="room-name">✅ ${room.id}</div>
-                    <div class="room-capacity">👥 Capacità: ${room.capacity} posti</div>
-                    ${room.hasProjector ? '<div class="room-feature">📽️ Proiettore disponibile</div>' : ''}
-                    ${room.isLab ? '<div class="room-feature">💻 Laboratorio</div>' : ''}
+                    <div class="room-capacity">👥 Capacity: ${room.capacity} seats</div>
+                    ${room.hasProjector ? '<div class="room-feature">📽️ Projector available</div>' : ''}
+                    ${room.isLab ? '<div class="room-feature">💻 Lab</div>' : ''}
                 </div>
             `).join('');
             
-            showAlert('success', `✅ Trovate ${rooms.length} aule disponibili!`);
+            showAlert('success', `✅ Found ${rooms.length} available rooms!`);
         }
     } catch (error) {
         console.error('Search error:', error);
         roomsList.innerHTML = `
             <div class="empty-state">
                 <div class="empty-state-icon">⚠️</div>
-                <div class="empty-state-text">Errore nella ricerca: ${error.message}</div>
+                <div class="empty-state-text">Search error: ${error.message}</div>
             </div>
         `;
     }
@@ -384,7 +384,7 @@ function saveApiUrl() {
     const url = document.getElementById('apiUrlInput').value.trim();
     
     if (!url) {
-        alert('Inserisci un URL valido');
+        alert('Enter a valid URL');
         return;
     }
     
@@ -395,7 +395,7 @@ function saveApiUrl() {
     localStorage.setItem('apiBaseUrl', API_BASE_URL);
     
     closeConfigModal();
-    showAlert('success', 'Configurazione salvata! Connessione all\'API in corso...');
+    showAlert('success', 'Configuration saved! Connecting to API...');
     
     // Reinitialize
     checkApiConnection();
@@ -411,7 +411,7 @@ function formatDate(dateString) {
         month: 'long', 
         day: 'numeric' 
     };
-    return date.toLocaleDateString('it-IT', options);
+    return date.toLocaleDateString('en-US', options);
 }
 
 // Handle Enter key in API URL input

@@ -5,26 +5,26 @@ const database = client.database(process.env.COSMOS_DATABASE_NAME);
 const container = database.container(process.env.COSMOS_CONTAINER_NAME);
 
 /**
- * Azure Function: Elimina una prenotazione
+ * Azure Function: Delete a booking
  * 
  * Endpoint: DELETE /api/bookings/{id}
- * Path param: id della prenotazione da eliminare
+ * Path param: id of the booking to delete
  */
 module.exports = async function (context, req) {
     const bookingId = req.params.id;
     
-    context.log(`Richiesta di eliminazione prenotazione: ${bookingId}`);
+    context.log(`Booking delete request: ${bookingId}`);
 
     try {
         if (!bookingId) {
             context.res = {
                 status: 400,
-                body: { error: "ID prenotazione mancante" }
+                body: { error: "Missing booking ID" }
             };
             return;
         }
 
-        // Prima recupera la prenotazione per ottenere il partition key (roomId)
+        // First fetch the booking to get the partition key (roomId)
         const querySpec = {
             query: "SELECT * FROM c WHERE c.id = @id",
             parameters: [{ name: "@id", value: bookingId }]
@@ -38,7 +38,7 @@ module.exports = async function (context, req) {
             context.res = {
                 status: 404,
                 body: {
-                    error: "Prenotazione non trovata",
+                    error: "Booking not found",
                     id: bookingId
                 }
             };
@@ -47,16 +47,16 @@ module.exports = async function (context, req) {
 
         const booking = bookings[0];
 
-        // Elimina la prenotazione
+        // Delete booking
         await container.item(bookingId, booking.roomId).delete();
 
-        context.log(`Prenotazione eliminata: ${bookingId}`);
+        context.log(`Booking deleted: ${bookingId}`);
 
         context.res = {
             status: 200,
             body: {
                 success: true,
-                message: "Prenotazione eliminata con successo",
+                message: "Booking deleted successfully",
                 deletedBooking: {
                     id: booking.id,
                     roomId: booking.roomId,
@@ -67,13 +67,13 @@ module.exports = async function (context, req) {
         };
 
     } catch (error) {
-        context.log.error('Errore nell\'eliminazione della prenotazione:', error);
+        context.log.error('Error while deleting booking:', error);
 
         if (error.code === 404) {
             context.res = {
                 status: 404,
                 body: {
-                    error: "Prenotazione non trovata",
+                    error: "Booking not found",
                     id: bookingId
                 }
             };
@@ -81,7 +81,7 @@ module.exports = async function (context, req) {
             context.res = {
                 status: 500,
                 body: {
-                    error: "Errore interno del server",
+                    error: "Internal server error",
                     message: error.message
                 }
             };

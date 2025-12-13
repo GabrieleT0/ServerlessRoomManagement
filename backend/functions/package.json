@@ -1,7 +1,7 @@
 {
   "name": "azure-aule-functions",
   "version": "1.0.0",
-  "description": "Sistema di prenotazione aule con Azure Functions",
+  "description": "Classroom booking system with Azure Functions",
   "scripts": {
     "start": "func start",
     "test": "echo \"No tests yet\""

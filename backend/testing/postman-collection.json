@@ -1,7 +1,7 @@
 {
   "info": {
-    "name": "Sistema Prenotazione Aule - Azure",
-    "description": "Collection per testare l'API di prenotazione aule",
+    "name": "Classroom Booking System - Azure",
+    "description": "Collection to test the classroom booking API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -18,7 +18,7 @@
   ],
   "item": [
     {
-      "name": "1. Crea Prenotazione",
+      "name": "1. Create Booking",
       "request": {
         "method": "POST",
         "header": [
@@ -29,7 +29,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"roomId\": \"A101\",\n  \"date\": \"2024-12-20\",\n  \"startTime\": \"09:00\",\n  \"endTime\": \"11:00\",\n  \"professorName\": \"Prof. Mario Rossi\",\n  \"course\": \"Cloud Computing\",\n  \"notes\": \"Demo per studenti\"\n}"
+          "raw": "{\n  \"roomId\": \"A101\",\n  \"date\": \"2024-12-20\",\n  \"startTime\": \"09:00\",\n  \"endTime\": \"11:00\",\n  \"professorName\": \"Prof. Jane Doe\",\n  \"course\": \"Cloud Computing\",\n  \"notes\": \"Student demo\"\n}"
         },
         "url": {
           "raw": "{{baseUrl}}/api/bookings",
@@ -40,7 +40,7 @@
       "response": []
     },
     {
-      "name": "2. Leggi Tutte le Prenotazioni",
+      "name": "2. Read All Bookings",
       "request": {
         "method": "GET",
         "url": {
@@ -52,7 +52,7 @@
       "response": []
     },
     {
-      "name": "3. Filtra per Aula",
+      "name": "3. Filter by Room",
       "request": {
         "method": "GET",
         "url": {
@@ -70,7 +70,7 @@
       "response": []
     },
     {
-      "name": "4. Filtra per Data",
+      "name": "4. Filter by Date",
       "request": {
         "method": "GET",
         "url": {
@@ -88,7 +88,7 @@
       "response": []
     },
     {
-      "name": "5. Aule Disponibili",
+      "name": "5. Available Rooms",
       "request": {
         "method": "GET",
         "url": {
@@ -114,7 +114,7 @@
       "response": []
     },
     {
-      "name": "6. Aule con Capacità Minima",
+      "name": "6. Rooms with Minimum Capacity",
       "request": {
         "method": "GET",
         "url": {
@@ -144,7 +144,7 @@
       "response": []
     },
     {
-      "name": "7. Elimina Prenotazione",
+      "name": "7. Delete Booking",
       "request": {
         "method": "DELETE",
         "url": {
@@ -156,7 +156,7 @@
       "response": []
     },
     {
-      "name": "8. Test Conflitto (deve fallire)",
+      "name": "8. Conflict Test (expected to fail)",
       "request": {
         "method": "POST",
         "header": [
@@ -167,7 +167,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"roomId\": \"A101\",\n  \"date\": \"2024-12-20\",\n  \"startTime\": \"10:00\",\n  \"endTime\": \"12:00\",\n  \"professorName\": \"Prof.ssa Laura Bianchi\",\n  \"course\": \"Algoritmi\"\n}"
+          "raw": "{\n  \"roomId\": \"A101\",\n  \"date\": \"2024-12-20\",\n  \"startTime\": \"10:00\",\n  \"endTime\": \"12:00\",\n  \"professorName\": \"Prof. Laura Smith\",\n  \"course\": \"Algorithms\"\n}"
         },
         "url": {
           "raw": "{{baseUrl}}/api/bookings",

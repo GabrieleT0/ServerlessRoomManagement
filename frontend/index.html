@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Prenotazione Aule | Azure Serverless Demo</title>
+    <title>Classroom Booking System | Azure Serverless Demo</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,13 +17,13 @@
                 <div class="logo-section">
                     <div class="logo-icon">📚</div>
                     <div>
-                        <h1 class="logo-title">Sistema Prenotazione Aule</h1>
+                        <h1 class="logo-title">Classroom Booking System</h1>
                         <p class="logo-subtitle">Azure Serverless Architecture Demo</p>
                     </div>
                 </div>
                 <div class="status-indicator">
                     <span class="status-dot" id="statusDot"></span>
-                    <span class="status-text" id="statusText">Connessione in corso...</span>
+                    <span class="status-text" id="statusText">Connecting...</span>
                 </div>
             </div>
         </div>
@@ -33,7 +33,7 @@
     <main class="main-content">
         <div class="container">
             
-            <!-- Alert Box (nascosto inizialmente) -->
+            <!-- Alert Box (hidden initially) -->
             <div class="alert" id="alertBox" style="display: none;">
                 <span class="alert-icon" id="alertIcon"></span>
                 <span class="alert-message" id="alertMessage"></span>
@@ -46,60 +46,60 @@
                 <!-- Left Column: Create Booking -->
                 <section class="card card-primary">
                     <div class="card-header">
-                        <h2 class="card-title">🎯 Nuova Prenotazione</h2>
-                        <p class="card-subtitle">Prenota un'aula per le tue lezioni</p>
+                        <h2 class="card-title">🎯 New Booking</h2>
+                        <p class="card-subtitle">Book a room for your classes</p>
                     </div>
                     
                     <form id="bookingForm" class="form">
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="roomId">Aula</label>
+                                <label for="roomId">Room</label>
                                 <select id="roomId" required>
-                                    <option value="">Seleziona aula...</option>
-                                    <option value="A101">A101 - Aula Magna (100 posti)</option>
-                                    <option value="A102">A102 - Laboratorio (30 posti)</option>
-                                    <option value="A103">A103 - Aula Standard (50 posti)</option>
-                                    <option value="B201">B201 - Sala Conferenze (80 posti)</option>
-                                    <option value="B202">B202 - Aula Multimediale (40 posti)</option>
+                                    <option value="">Select a room...</option>
+                                    <option value="A101">A101 - Main Hall (100 seats)</option>
+                                    <option value="A102">A102 - Lab (30 seats)</option>
+                                    <option value="A103">A103 - Standard Room (50 seats)</option>
+                                    <option value="B201">B201 - Conference Room (80 seats)</option>
+                                    <option value="B202">B202 - Multimedia Room (40 seats)</option>
                                 </select>
                             </div>
 
                             <div class="form-group">
-                                <label for="date">Data</label>
+                                <label for="date">Date</label>
                                 <input type="date" id="date" required>
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="startTime">Ora Inizio</label>
+                                <label for="startTime">Start Time</label>
                                 <input type="time" id="startTime" required>
                             </div>
 
                             <div class="form-group">
-                                <label for="endTime">Ora Fine</label>
+                                <label for="endTime">End Time</label>
                                 <input type="time" id="endTime" required>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="professorName">Nome Professore</label>
-                            <input type="text" id="professorName" placeholder="es. Prof. Mario Rossi" required>
+                            <label for="professorName">Professor Name</label>
+                            <input type="text" id="professorName" placeholder="e.g. Prof. Jane Doe" required>
                         </div>
 
                         <div class="form-group">
-                            <label for="course">Corso</label>
-                            <input type="text" id="course" placeholder="es. Cloud Computing" required>
+                            <label for="course">Course</label>
+                            <input type="text" id="course" placeholder="e.g. Cloud Computing" required>
                         </div>
 
                         <div class="form-group">
-                            <label for="notes">Note (opzionale)</label>
-                            <textarea id="notes" rows="3" placeholder="Aggiungi note o requisiti speciali..."></textarea>
+                            <label for="notes">Notes (optional)</label>
+                            <textarea id="notes" rows="3" placeholder="Add notes or special requirements..."></textarea>
                         </div>
 
                         <button type="submit" class="btn btn-primary" id="submitBtn">
-                            <span class="btn-text">Prenota Aula</span>
-                            <span class="btn-loader" style="display: none;">⏳ Prenotazione...</span>
+                            <span class="btn-text">Book Room</span>
+                            <span class="btn-loader" style="display: none;">⏳ Booking...</span>
                         </button>
                     </form>
                 </section>
@@ -110,34 +110,34 @@
                     <!-- Available Rooms -->
                     <section class="card card-secondary">
                         <div class="card-header">
-                            <h2 class="card-title">🔍 Verifica Disponibilità</h2>
-                            <p class="card-subtitle">Trova aule libere per data e orario</p>
+                            <h2 class="card-title">🔍 Check Availability</h2>
+                            <p class="card-subtitle">Find free rooms by date and time</p>
                         </div>
 
                         <form id="searchForm" class="form">
                             <div class="form-group">
-                                <label for="searchDate">Data</label>
+                                <label for="searchDate">Date</label>
                                 <input type="date" id="searchDate" required>
                             </div>
 
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="searchStart">Inizio</label>
+                                    <label for="searchStart">Start</label>
                                     <input type="time" id="searchStart" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="searchEnd">Fine</label>
+                                    <label for="searchEnd">End</label>
                                     <input type="time" id="searchEnd" required>
                                 </div>
                             </div>
 
                             <button type="submit" class="btn btn-secondary">
-                                Cerca Aule Disponibili
+                                Search Available Rooms
                             </button>
                         </form>
 
                         <div id="availableRooms" class="results-container" style="display: none;">
-                            <h3 class="results-title">Aule Disponibili</h3>
+                            <h3 class="results-title">Available Rooms</h3>
                             <div id="roomsList"></div>
                         </div>
                     </section>
@@ -145,8 +145,8 @@
                     <!-- Active Bookings -->
                     <section class="card">
                         <div class="card-header">
-                            <h2 class="card-title">📋 Prenotazioni Attive</h2>
-                            <button class="btn-refresh" onclick="loadBookings()" title="Aggiorna">
+                            <h2 class="card-title">📋 Active Bookings</h2>
+                            <button class="btn-refresh" onclick="loadBookings()" title="Refresh">
                                 ↻
                             </button>
                         </div>
@@ -154,7 +154,7 @@
                         <!-- Filters -->
                         <div class="filters">
                             <select id="filterRoom" onchange="applyFilters()">
-                                <option value="">Tutte le aule</option>
+                                <option value="">All rooms</option>
                                 <option value="A101">A101</option>
                                 <option value="A102">A102</option>
                                 <option value="A103">A103</option>
@@ -162,11 +162,11 @@
                                 <option value="B202">B202</option>
                             </select>
 
-                            <input type="date" id="filterDate" onchange="applyFilters()" placeholder="Filtra per data">
+                            <input type="date" id="filterDate" onchange="applyFilters()" placeholder="Filter by date">
                         </div>
 
                         <div id="bookingsList" class="bookings-list">
-                            <div class="loading">⏳ Caricamento prenotazioni...</div>
+                            <div class="loading">⏳ Loading bookings...</div>
                         </div>
                     </section>
                 </div>
@@ -175,30 +175,30 @@
             <!-- Stats Footer -->
             <footer class="stats-bar">
                 <div class="stat-item">
-                    <span class="stat-label">Prenotazioni Totali</span>
+                    <span class="stat-label">Total Bookings</span>
                     <span class="stat-value" id="totalBookings">-</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-label">Prenotazioni Oggi</span>
+                    <span class="stat-label">Bookings Today</span>
                     <span class="stat-value" id="todayBookings">-</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-label">Aule in Uso Ora</span>
+                    <span class="stat-label">Rooms In Use Now</span>
                     <span class="stat-value" id="activeRooms">-</span>
                 </div>
             </footer>
         </div>
     </main>
 
-    <!-- Config Modal (nascosto, per configurare l'API URL) -->
+    <!-- Config Modal (hidden, configure API URL) -->
     <div class="modal" id="configModal">
         <div class="modal-content">
-            <h2>⚙️ Configurazione API</h2>
-            <p>Inserisci l'URL della tua Azure Function App:</p>
+            <h2>⚙️ API Configuration</h2>
+            <p>Enter your Azure Function App URL:</p>
             <input type="text" id="apiUrlInput" placeholder="https://your-app.azurewebsites.net" class="modal-input">
             <div class="modal-buttons">
-                <button onclick="saveApiUrl()" class="btn btn-primary">Salva</button>
-                <button onclick="closeConfigModal()" class="btn btn-secondary">Annulla</button>
+                <button onclick="saveApiUrl()" class="btn btn-primary">Save</button>
+                <button onclick="closeConfigModal()" class="btn btn-secondary">Cancel</button>
             </div>
         </div>
     </div>

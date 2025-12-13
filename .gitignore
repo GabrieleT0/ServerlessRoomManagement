@@ -13,7 +13,6 @@ __azurite_db*__.json
 node_modules/
 npm-debug.log
 yarn-error.log
-package-lock.json
 
 # Logs
 *.log

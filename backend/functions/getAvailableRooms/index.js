@@ -4,7 +4,7 @@ const client = new CosmosClient(process.env.COSMOS_CONNECTION_STRING);
 const database = client.database(process.env.COSMOS_DATABASE_NAME);
 const container = database.container(process.env.COSMOS_CONTAINER_NAME);
 
-// Lista delle aule disponibili nell'edificio (hardcoded per la demo)
+// List of available rooms in the building (hardcoded for the demo)
 const ALL_ROOMS = [
     { id: "A101", capacity: 30, hasProjector: true, building: "A" },
     { id: "A102", capacity: 50, hasProjector: true, building: "A" },
@@ -17,35 +17,35 @@ const ALL_ROOMS = [
 ];
 
 /**
- * Azure Function: Trova aule disponibili per data e fascia oraria
+ * Azure Function: Find available rooms for a given date and time range
  * 
  * Endpoint: GET /api/rooms/available?date=2024-12-15&startTime=09:00&endTime=11:00
- * Query params (obbligatori):
- *   - date: data (YYYY-MM-DD)
- *   - startTime: orario inizio (HH:MM)
- *   - endTime: orario fine (HH:MM)
- * Query params (opzionali):
- *   - minCapacity: capacità minima richiesta
+ * Required query params:
+ *   - date: date (YYYY-MM-DD)
+ *   - startTime: start time (HH:MM)
+ *   - endTime: end time (HH:MM)
+ * Optional query params:
+ *   - minCapacity: minimum required capacity
  */
 module.exports = async function (context, req) {
-    context.log('Richiesta aule disponibili');
+    context.log('Available rooms request');
 
     try {
-        // Validazione parametri obbligatori
+        // Validate required parameters
         const { date, startTime, endTime } = req.query;
 
         if (!date || !startTime || !endTime) {
             context.res = {
                 status: 400,
                 body: {
-                    error: "Parametri obbligatori mancanti",
+                    error: "Missing required parameters",
                     required: ["date", "startTime", "endTime"]
                 }
             };
             return;
         }
 
-        // Validazione formati
+        // Validate formats
         const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
         const timeRegex = /^\d{2}:\d{2}$/;
 
@@ -53,7 +53,7 @@ module.exports = async function (context, req) {
             context.res = {
                 status: 400,
                 body: {
-                    error: "Formato non valido",
+                    error: "Invalid format",
                     formats: {
                         date: "YYYY-MM-DD",
                         time: "HH:MM"
@@ -66,12 +66,12 @@ module.exports = async function (context, req) {
         if (startTime >= endTime) {
             context.res = {
                 status: 400,
-                body: { error: "L'orario di fine deve essere successivo all'orario di inizio" }
+                body: { error: "End time must be after start time" }
             };
             return;
         }
 
-        // Recupera tutte le prenotazioni per la data richiesta
+        // Fetch all bookings for the requested date
         const querySpec = {
             query: "SELECT * FROM c WHERE c.date = @date",
             parameters: [{ name: "@date", value: date }]
@@ -81,23 +81,23 @@ module.exports = async function (context, req) {
             .query(querySpec)
             .fetchAll();
 
-        context.log(`Trovate ${bookings.length} prenotazioni per il ${date}`);
+        context.log(`Found ${bookings.length} bookings for ${date}`);
 
-        // Filtra aule disponibili
+        // Filter available rooms
         const availableRooms = ALL_ROOMS.filter(room => {
-            // Trova tutte le prenotazioni per questa aula
+            // Find all bookings for this room
             const roomBookings = bookings.filter(b => b.roomId === room.id);
 
-            // Controlla se c'è conflitto con l'orario richiesto
+            // Check for conflicts with requested time
             const hasConflict = roomBookings.some(booking => {
-                // C'è conflitto se gli orari si sovrappongono
+                // Conflict exists if times overlap
                 return !(endTime <= booking.startTime || startTime >= booking.endTime);
             });
 
             return !hasConflict;
         });
 
-        // Filtra per capacità minima se richiesto
+        // Filter by minimum capacity if requested
         let filteredRooms = availableRooms;
         const minCapacity = req.query.minCapacity ? parseInt(req.query.minCapacity) : 0;
         
@@ -105,7 +105,7 @@ module.exports = async function (context, req) {
             filteredRooms = availableRooms.filter(room => room.capacity >= minCapacity);
         }
 
-        // Per ogni aula, aggiungi info sulle prenotazioni del giorno
+        // For each room, add info about the day's bookings
         const roomsWithSchedule = filteredRooms.map(room => {
             const dayBookings = bookings
                 .filter(b => b.roomId === room.id)
@@ -123,9 +123,9 @@ module.exports = async function (context, req) {
             };
         });
 
-        context.log(`Trovate ${filteredRooms.length} aule disponibili`);
+        context.log(`Found ${filteredRooms.length} available rooms`);
 
-        // Risposta
+        // Response
         context.res = {
             status: 200,
             body: {
@@ -141,12 +141,12 @@ module.exports = async function (context, req) {
         };
 
     } catch (error) {
-        context.log.error('Errore nella ricerca aule disponibili:', error);
+        context.log.error('Error while searching available rooms:', error);
 
         context.res = {
             status: 500,
             body: {
-                error: "Errore interno del server",
+                error: "Internal server error",
                 message: error.message
             }
         };

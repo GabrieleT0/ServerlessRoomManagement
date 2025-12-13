@@ -1,82 +1,82 @@
-# Sistema di Prenotazione Aule - Azure Serverless Demo
+# Classroom Booking System - Azure Serverless Demo
 ![Services](./services.png)
 
 
-## 🎯 Obiettivo della Demo
+## 🎯 Demo Goal
 
-Mostrare come creare una Web-App per prenotazioni delle aule usando:
+Show how to build a classroom booking web app using:
 - **Azure Functions** (serverless compute)
-- **Azure Cosmos DB** (database SQL managed)
+- **Azure Cosmos DB** (managed SQL database)
 - **Azure Application Insights** (monitoring)
-- **Azure Storage Static Website** (hosting frontend)
+- **Azure Storage Static Website** (frontend hosting)
 
 
-## 📋 Prerequisiti
+## 📋 Prerequisites
 
-- [Account Azure (con credito disponibile)](https://portal.azure.com/)
-- [CLI Azure](https://learn.microsoft.com/it-it/cli/azure/install-azure-cli?view=azure-cli-latest)
+- [Azure account (with available credit)](https://portal.azure.com/)
+- [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli)
 - [Node.js](https://nodejs.org/en/download)
 
 ## 🚀 Setup
 
 
-### 1. Verifica Credito Azure
+### 1. Check Azure Subscription
 
 ```bash
-# Login ad Azure
+# Sign in to Azure
 az login
 
-# Verifica sottoscrizioni disponibili
+# List available subscriptions
 az account list --output table
 
-# Imposta la sottoscrizione da usare (se ne hai più di una)
-az account set --subscription "NOME_O_ID_SOTTOSCRIZIONE"
+# Select the subscription to use (if you have more than one)
+az account set --subscription "SUBSCRIPTION_NAME_OR_ID"
 
 ```
 
-### 2. Installa Azure Functions Core Tools
+### 2. Install Azure Functions Core Tools
 ```bash
-# Installa globalmente sul sistema la versione 4 di Azure Functions Core Tools usando npm
+# Install Azure Functions Core Tools v4 globally with npm
 npm install -g azure-functions-core-tools@4
 ```
 
-### 3. Crea le Risorse Azure
+### 3. Create Azure Resources
 
 ```bash
-# Esegui lo script di setup
+# Run the setup script
 cd setup
 chmod +x create-resources.sh
 ./create-resources.sh
 ```
 
-Lo script creerà:
+The script creates:
 - Resource Group
 - Cosmos DB account + database
-- Function App con Application Insights
-- Azure BLOB Storage con deploy dei file per il frontend
+- Function App with Application Insights
+- Azure Blob Storage with frontend deployment
 
-### 4. Deploy delle Functions
+### 4. Deploy the Functions
 
 ```bash
-# Torna alla root del progetto
+# Go back to the project root
 cd ..
 
-# Vai nella cartella del backend e poi nella cartella dove ci sono le functions
+# Move to the backend/functions folder
 cd backend/functions
 
-# Installa dipendenze
+# Install dependencies
 npm install
 
-# Deploy su Azure
-func azure functionapp publish <NOME_FUNCTION_APP>
+# Deploy to Azure
+func azure functionapp publish <FUNCTION_APP_NAME>
 ```
 
-## 📁 Struttura del Progetto
+## 📁 Project Structure
 
 ```markdown
 azure-serverless-demo/
 ├── DevContainer/
-├── setup/                          # Script di setup Azure
+├── setup/                          # Azure setup scripts
 │   ├── create-resources.sh
 │   └── cleanup.sh
 ├── backend/
@@ -85,26 +85,26 @@ azure-serverless-demo/
 │   │   ├── getBookings/
 │   │   ├── deleteBooking/
 │   │   └── getAvailableRooms/
-│   └── testing/                    # Script di test
-│       └── postman-collection.json # Collection per test con Postman
+│   └── testing/                    # Test scripts
+│       └── postman-collection.json # Postman collection for testing
 └── frontend/
-    ├── index.html                  # Homepage dell'app
-    ├── script.js                   # Logica JavaScript
-    └── style.css                   # Foglio di stile dell'app
+    ├── index.html                  # App homepage
+    ├── script.js                   # JavaScript logic
+    └── style.css                   # App stylesheet
 ```
 
-## 🧹 Cleanup delle risorse
+## 🧹 Resource Cleanup
 
 ```bash
 cd setup
 ./cleanup.sh
 ```
 
-Questo eliminerà tutte le risorse per evitare costi.
+This removes all resources to avoid costs.
 
-## 📚 Risorse Aggiuntive
+## 📚 Additional Resources
 
-- [Documentazione di Azure](https://docs.microsoft.com/azure)
+- [Azure documentation](https://docs.microsoft.com/azure)
 - [Azure for Students](https://azure.microsoft.com/free/students/)
-- [Lista dei servizi free](https://azure.microsoft.com/it-it/pricing/free-services/)
+- [Free services list](https://azure.microsoft.com/pricing/free-services/)
 
